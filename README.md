@@ -2,14 +2,14 @@
 
 ### Set up the project
 
-- clone the project to your local repository [Link](https://github.com/chrix95/quantox-assessment.git)
+- Clone the project to your local repository [Link](https://github.com/chrix95/quantox-assessment.git)
 - Rename the `.env.sample` file to `.env`
 - Update all variables within the `.env` file
 ```
 DATABASE_HOST=
-DATABASE_PORT=
+DATABASE_PORT=3306
 DATABASE_NAME=
-DATABASE_USER=
+DATABASE_USERNAME=
 DATABASE_PASSWORD=
 ```
 - Create database on your local machine and import the dump file `quantox.sql` within the root directory
