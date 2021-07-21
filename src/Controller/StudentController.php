@@ -1,7 +1,7 @@
 <?php
 namespace Src\Controller;
 
-use Src\Classess\Student;
+use Src\Classes\Student;
 
 class StudentController {
     private $db;
@@ -43,6 +43,12 @@ class StudentController {
     }
 
     private function getUser($id) {
-
+        $result = $this->studentGateway->find($id);
+        if (! $result) {
+            return $this->notFoundResponse();
+        }
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($result);
+        return $response;
     }
 }
