@@ -18,21 +18,23 @@ class Student {
             $statement = $this->db->prepare($statement);
             $statement->bindValue(1, $id);
             $statement->execute();
-            $response = $statement->fetch(\PDO::FETCH_ASSOC);
-
-            // get the user grades
-            $stm = $this->db->prepare("SELECT grade FROM grades WHERE user_id = ?");
-            $stm->bindValue(1, $id);
-            $stm->execute();
-            $response['grades'] = $stm->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $this->checkResultStatus($response['board'], $response['grades']);
-            // set the average and result status to the response
-            $response['average'] = $result['average'];
-            $response['final_result'] = $result['final_result'];
-            if ($result['grades']) {
-                $response['grades'] = $result['grades'];
+            if ($response = $statement->fetch(\PDO::FETCH_ASSOC)) {
+                // get the user grades
+                $stm = $this->db->prepare("SELECT grade FROM grades WHERE user_id = ?");
+                $stm->bindValue(1, $id);
+                $stm->execute();
+                $response['grades'] = $stm->fetchAll(\PDO::FETCH_ASSOC);
+                $result = $this->checkResultStatus($response['board'], $response['grades']);
+                // set the average and result status to the response
+                $response['average'] = $result['average'];
+                $response['final_result'] = $result['final_result'];
+                if ($result['grades']) {
+                    $response['grades'] = $result['grades'];
+                }
+                return $response;
+            } else {
+                return "User could not be found";
             }
-            return $response;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }    
