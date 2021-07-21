@@ -25,10 +25,13 @@ class Student {
             $stm->bindValue(1, $id);
             $stm->execute();
             $response['grades'] = $stm->fetchAll(\PDO::FETCH_ASSOC);
-            $resuult = $this->checkResultStatus($response['board'], $response['grades']);
+            $result = $this->checkResultStatus($response['board'], $response['grades']);
             // set the average and result status to the response
-            $response['average'] = $resuult['avg'];
-            $response['final_result'] = $resuult['final_result'];
+            $response['average'] = $result['average'];
+            $response['final_result'] = $result['final_result'];
+            if ($result['grades']) {
+                $response['grades'] = $result['grades'];
+            }
             return $response;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -40,14 +43,8 @@ class Student {
         if (strtolower($board) === "csm") {
             $result = $this->rateCsmStudent($grades);
         } else {
-            $count = count($grades);
+            $result = $this->rateCsmbStudent($grades);
             $result['average'] = $this->calculateAvg($grades);
-            if ($count > 2) {
-
-            } else {
-
-            }
-
         }
         return $result;
     }
@@ -61,10 +58,29 @@ class Student {
     private function rateCsmStudent($grades) {
         $avg = $this->calculateAvg($grades);
         if ($avg >= 7) {
-            return ["avg" => $avg, "final_result" => "Pass"];
+            return ["average" => $avg, "final_result" => "Pass"];
         } else {
-            return ["avg" => $avg, "final_result" => "Fail"];
+            return ["average" => $avg, "final_result" => "Fail"];
         }
+    }
+
+    private function rateCsmbStudent($grades) {
+        $result = [];
+        $count = count($grades);
+        if ($count <= 2) {
+            // discard the smalllest grade
+            array_reduce($grades, function ($a, $b){
+                return $a['grade'] < $b['grade'] ? $a : $b;
+            }, array_shift($grades));
+            // reassign the grades
+            $result['grades'] = $grades;
+        }
+        if (max(array_column($grades, 'grade')) > 8) {
+            $result["final_result"] = "Pass";
+        } else {
+            $result["final_result"] = "Fail";
+        }
+        return $result;
     }
 
 }
