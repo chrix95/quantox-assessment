@@ -12,7 +12,7 @@ class Student {
 
     public function find($id)
     {
-        $statement = "SELECT id, name, board FROM students WHERE id = ?";
+        $statement = "SELECT student_id, name, board FROM students WHERE student_id = ?";
 
         try {
             $statement = $this->db->prepare($statement);
